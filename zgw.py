@@ -7,7 +7,6 @@ import pymarc
 import web
 from PyZ3950 import zoom
 from parsers import ParseError, Parser
-from settings import SERVER
 
 urls = (
   '/', 'usage',
@@ -51,7 +50,8 @@ class search:
   def GET(self, query_string):
     print render.base(server=SERVER)
     results = run_query(SERVER, query_string)
-    print render.search(query_string=query_string, results=results,
+    print render.search(query_string=query_string,
+                        results=results,
                         total=len(results))
 
   def POST(self):
@@ -59,7 +59,8 @@ class search:
     query_string = i.query_string
     print render.base(server=SERVER)
     results = run_query(SERVER, query_string)
-    print render.search(query_string=query_string, results=results,
+    print render.search(query_string=query_string,
+                        results=results,
                         total=len(results))
 
 class usage:
