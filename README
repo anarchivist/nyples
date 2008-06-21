@@ -1,0 +1,20 @@
+DESCRIPTION
+-----------
+
+zgw.py is a lightweight Z39.50/Web gateway. It is not designed to be a
+complete implementation, but rather a starting point to develop fuller
+applications that require such a gateway.
+
+CONFIGURATION
+-------------
+See settings.py. Everything else assumes knowledge of web.py and CGI,
+FastCGI, etc.
+
+DEPENDENCIES
+------------
+pymarc 1.0 or later - http://pypi.python.org/pypi/pymarc/
+PyZ3950 - http://www.panix.com/~asl2/software/PyZ3950/
+web.py - http://webpy.org/
+
+LICENSE: MIT/X11
+AUTHOR: Mark A. Matienzo <mark@matienzo.org>

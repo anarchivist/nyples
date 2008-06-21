@@ -1,0 +1,13 @@
+$def with (server)
+<html>
+  <head>
+    <title>zgw.py</title>
+  </head>
+  <body>
+    <h1><a href="/">zgw.py</a>: a lightweight z39.50 web gateway</h1>
+    <p>currently searching database $server['db'] on $server['host']<br/>
+    query syntax: $server['qsyntax'] / result syntax: $server['rsyntax']
+    (element set $server['element_set'])</p>
+    <form method="post" action="/query">
+    <p><input type="text" name="query_string"/><input type="submit" value="submit"/></p>
+    </form>
