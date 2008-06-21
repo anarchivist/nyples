@@ -11,10 +11,11 @@ from parsers import ParseError, Parser
 urls = (
   '/', 'usage',
   '/search/(.*)', 'search',
+  '/marcxml/(.*)', 'marcxml',
   '/query', 'search'
 )
 
-SERVER = {'host': 'leo.nypl.org', 'port': 210, 'db': 'dynix',
+SERVER = {'host': 'catnyp.nypl.org', 'port': 210, 'db': 'INNOPAC',
           'qsyntax': 'PQF', 'rsyntax': 'USMARC', 'element_set': 'F'}
 
 BASE_QUERY = '@attr 1=12 '
@@ -36,14 +37,15 @@ def run_query(server, qs):
   for result in result_set:
     if result.syntax == 'USMARC':
       r = pymarc.Record(data=result.data)   # deserialize
-      conv_record = r.to_unicode()          # serialize, encode, htmlify
+#      conv_record = r.to_unicode()          # serialize, encode, htmlify
+      conv_record = pymarc.record_to_xml(r)          # serialize, encode, htmlify
     elif result.syntax in ('SUTRS', 'XML'): # doesn't account for MARC8 text
       conv_record = p.to_html(result.data)
     else:
       raise 
     out.append(conv_record)
   conn.close()
-  return out
+  return ''.join(out)
 
 class search:
   """web.py class for submitting a Z39.50 query and returning results"""
@@ -62,6 +64,16 @@ class search:
     print render.search(query_string=query_string,
                         results=results,
                         total=len(results))
+
+class marcxml:
+  """web.py class for submitting a Z39.50 query and returning results"""
+  def GET(self, query_string):
+    xml = run_query(SERVER, query_string)
+    if xml != '':
+      web.header('Content-Type', 'application/xml')
+      print render.marcxml(xml=xml)
+    else:
+      web.notfound()
 
 class usage:
   """web.py class to display usage information"""
