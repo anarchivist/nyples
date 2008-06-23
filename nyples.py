@@ -5,10 +5,9 @@ nyples.py
 
 import pymarc
 import web
-import libxml2
-import libxslt
+from Ft.Xml import InputSource
+from Ft.Xml.Xslt.Processor import Processor
 from PyZ3950 import zoom
-import urllib
 from parsers import ParseError, Parser
 
 urls = (
@@ -21,10 +20,9 @@ urls = (
 
 SERVER = {'host': 'catnyp.nypl.org', 'port': 210, 'db': 'INNOPAC',
             'qsyntax': 'PQF', 'rsyntax': 'USMARC', 'element_set': 'F'}
-
+MODS_XSLT = InputSource.DefaultFactory.fromUri('http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3-2.xsl')
 BASE_QUERY = '@attr 1=12 '
 
-MODS_XSLT = libxml2.parseDoc(urllib.urlopen('http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3-2.xsl').read()) 
 
 render = web.template.render('templates/')
 zoom.ResultSet.__bases__ += (Parser,)
@@ -84,14 +82,10 @@ class marcxml:
 
 class mods:
     def GET(self, query_string):
-        xml = run_query(SERVER, query_string)
-        if xml != '':
-            xmlobj = libxml2.parseDoc(xml)
-            result = MODS_XSLT.applyStylesheet(xmlobj)
-            xmlobj.freeDoc()
-            print render.marcxml(xml=result)
-        else:
-            web.notfound()            
+        xml = InputSource.DefaultFactory.fromUri('http://test.matienzo.org/marcxml/' . query_string)
+        processor = Processor()
+        processor.appendStylesheet(MODS_XSLT)
+        print render.marcxml(processor.run(xml))         
 
 class usage:
     """web.py class to display usage information"""
