@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env PYTHONPATH=/home/matienzo/lib/python2.4/site-packages python2.4
 """
 nyples.py
 """
