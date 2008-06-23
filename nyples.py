@@ -74,7 +74,7 @@ class marcxml:
     def GET(self, query_string):
         xml = run_query(SERVER, query_string)
         if xml != '':
-            xml = '<collection xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">%s</collection>' % xml
+            xml = '<?xml version="1.0" encoding="UTF-8"?><collection xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">%s</collection>' % xml
             web.header('Content-Type', 'application/xml')
             print render.marcxml(xml=xml)
         else:
@@ -82,10 +82,16 @@ class marcxml:
 
 class mods:
     def GET(self, query_string):
-        xml = InputSource.DefaultFactory.fromUri('http://test.matienzo.org/marcxml/' . query_string)
-        processor = Processor()
-        processor.appendStylesheet(MODS_XSLT)
-        print render.marcxml(processor.run(xml))         
+        xml = run_query(SERVER, query_string)
+        if xml != '':
+            xml = '<?xml version="1.0" encoding="UTF-8"?><collection xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">%s</collection>' % xml
+            xml = InputSource.DefaultFactory.fromString(xml)
+            processor = Processor()
+            processor.appendStylesheet(MODS_XSLT)
+            web.header('Content-Type', 'application/xml')
+            print render.marcxml(processor.run(xml))
+        else:
+            web.notfound()
 
 class usage:
     """web.py class to display usage information"""
@@ -100,6 +106,6 @@ def runfcgi_apache(func):
 
 if __name__ == '__main__':
     #web.wsgi.runwsgi = lambda func, addr=None: web.wsgi.runfcgi(func, addr)
-    web.wsgi.runwsgi = runfcgi_apache
+    #web.wsgi.runwsgi = runfcgi_apache
     web.run(urls, globals())
 
