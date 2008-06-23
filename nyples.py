@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.4
 """
 nyples.py
 """
@@ -82,5 +82,12 @@ class usage:
     print render.usage()
     
 web.webapi.internalerror = web.debugerror
+
+def runfcgi_apache(func):
+  web.wsgi.runfcgi(func, None)
+
 if __name__ == '__main__':
+  #web.wsgi.runwsgi = lambda func, addr=None: web.wsgi.runfcgi(func, addr)
+  web.wsgi.runwsgi = runfcgi_apache
   web.run(urls, globals())
+
