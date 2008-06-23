@@ -20,7 +20,6 @@ urls = (
 
 SERVER = {'host': 'catnyp.nypl.org', 'port': 210, 'db': 'INNOPAC',
             'qsyntax': 'PQF', 'rsyntax': 'USMARC', 'element_set': 'F'}
-MODS_XSLT = InputSource.DefaultFactory.fromUri('http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3-2.xsl')
 BASE_QUERY = '@attr 1=12 '
 
 
@@ -82,16 +81,12 @@ class marcxml:
 
 class mods:
     def GET(self, query_string):
-        xml = run_query(SERVER, query_string)
-        if xml != '':
-            xml = '<?xml version="1.0" encoding="UTF-8"?><collection xmlns="http://www.loc.gov/MARC21/slim" xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">%s</collection>' % xml
-            xml = InputSource.DefaultFactory.fromString(xml)
-            processor = Processor()
-            processor.appendStylesheet(MODS_XSLT)
-            web.header('Content-Type', 'application/xml')
-            print render.marcxml(processor.run(xml))
-        else:
-            web.notfound()
+        xml = InputSource.DefaultFactory.fromUri('http://localhost:8080/marcxml/%s' % query_string)
+        MODS_XSLT = InputSource.DefaultFactory.fromUri('http://www.loc.gov/standards/mods/v3/MARC21slim2MODS3-2.xsl')
+        processor = Processor()
+        processor.appendStylesheet(MODS_XSLT)
+        web.header('Content-Type', 'application/xml')
+        print render.marcxml(processor.run(xml))         
 
 class usage:
     """web.py class to display usage information"""
